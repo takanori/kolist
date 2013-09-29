@@ -21,3 +21,6 @@ local/
 *.tar.gz
 .DS_Store
 MYMETA.*
+
+# Session
+KoList/sessions/
