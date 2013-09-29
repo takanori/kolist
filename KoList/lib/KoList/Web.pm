@@ -89,10 +89,12 @@ post '/todos/create' => sub {
 		# my $error_messages = [$result->errors->{content}];
 		# return $c->render_json({error_messages => $error_messages});
 	# }
+	my $session = Plack::Session->new($c->req->env);
+
 	# TODO
 	my $todo = $self->create_todo({
-			user_id => $c->req->param('user_id'),
-			user_name => $c->req->param('user_name'),
+			user_id => $session->get('user_id'),
+			user_name => $session->get('user_name'),
 			content => $c->req->param('content'),
 			due => $c->req->param('due'),
 			done => $c->req->param('done'),
@@ -247,7 +249,7 @@ sub create_todo {
 		# });
 	my $row = $self->db->insert('todos', {
 			user_id => $todo->{user_id}, 
-			user_name => ,
+			user_name => $todo->{user_name},,
 			content => $todo->{content},
 			due => $self->current_time, # TODO
 			done => 0, # TODO

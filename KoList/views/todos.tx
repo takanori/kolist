@@ -12,8 +12,6 @@
 				<div class="clearfix">
 					<textarea class="content-input col-xs-12" name="content" rows="3" placeholder="Write your texts here"></textarea><br>
 					<!-- TODO -->
-					<input type="input" name="user_id" value="iHfnCyIp4xGyMYtPU5rQ3g">
-					<input type="input" name="user_name" value="alice">
 					<input type="input" name="due" value="sample_due">
 					<input type="input" name="done" value="sample_done">
 				</div>
