@@ -73,7 +73,7 @@ get '/todos' => [qw/logged_in_only/] => sub {
 	$c->render('todos.tx', {});
 };
 
-# TODO make CRUS ad logged_in_only
+# TODO make CRUD ad logged_in_only
 post '/todos/create' => sub {
 	my ($self, $c) = @_;
 	my $result = $c->req->validator([
@@ -87,7 +87,10 @@ post '/todos/create' => sub {
 		my $error_messages = [$result->errors->{text}];
 		return $c->render_json({error_messages => $error_messages});
 	}
-	my $todo = $self->create_todo($result->valid('text'));
+	my $todo = $self->create_todo(
+		$result->valid('text'),
+	);
+
 	$c->render_json({todo => $todo});
 };
 
@@ -214,11 +217,14 @@ sub db {
 # Todos ================================================================== 
 
 sub create_todo {
-	my ($self, $text) = @_;
+	my ($self, $text, $due, $done) = @_;
 	$text = "" if !defined $text;
 	my $row = $self->db->insert('todos', {
 			text => $text,
+			due => $self->current_time, # TODO
+			done => 0,
 			created_at => $self->current_time,
+			updated_at => $self->current_time,
 		});
 	return \%{$row->get_columns};
 }
@@ -237,11 +243,14 @@ sub todo_list {
 }
 
 sub update_todo {
-	my ($self, $todo_id, $text) = @_;
+	my ($self, $todo_id, $text, $due, $done) = @_;
 	$text = '' if !defined $text;
 	my $update_row_count = $self->db->update('todos',
 		{
 			text => $text,
+			due => $due,
+			done => $done,
+			updated_at => $self->current_time,
 		},
 		{
 			id => $todo_id,
@@ -270,7 +279,7 @@ sub username_exists {
 	my ($self, $username) = @_;
 
 	my $row = $self->db->single('users', {
-			user_name => $username,
+			name => $username,
 		});
 	return $row ? 1 : 0;
 }
@@ -279,25 +288,25 @@ sub check_username_and_password {
 	my ($self, $username, $password) = @_;
 
 	my $row = $self->db->single('users', {
-			user_name => $username,
+			name => $username,
 			password => Digest::SHA::sha1_hex($username . $password),
 		});
 
-	return $row ? $row->get_column('user_id') : 0;
+	return $row ? $row->get_column('id') : 0;
 }
 
 sub create_user {
 	my ($self, $username, $email, $password) = @_;
 
 	my $row = $self->db->insert('users', {
-			user_id => Data::GUID->new->as_base64_urlsafe,
-			user_name => $username,
+			id => Data::GUID->new->as_base64_urlsafe,
+			name => $username,
 			email => $email,
 			password => Digest::SHA::sha1_hex($username . $password),
 			created_at => $self->current_time,
 		});
 
-	return $row->get_column('user_id');
+	return $row->get_column('id');
 }
 
 # Utility ================================================================== 
@@ -308,4 +317,3 @@ sub current_time {
 }
 
 1;
-
