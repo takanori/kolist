@@ -10,7 +10,9 @@ table {
 	pk 'id';
 	columns qw(
 		id
-		text
+		user_id
+		user_name
+		content	
 		due
 		done
 		created_at

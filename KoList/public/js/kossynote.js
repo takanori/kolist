@@ -5,7 +5,7 @@ $(document).ready(function() {
 	ksTodos.addClass('ks-todos');
 	ksTodos.append(
 		'<table class="table table-striped">' +
-		'<thead><tr><th class="col-md-9">text</th><th class="col-md-2">created_at</th><th class="col-md-1"></th></tr></thead>' +
+		'<thead><tr><th class="col-md-9">content</th><th class="col-md-2">created_at</th><th class="col-md-1"></th></tr></thead>' +
 		'<tbody class="ks-list"></tbody></table>'
 	);
 
@@ -41,7 +41,7 @@ $(document).ready(function() {
 			steps: [
 				{
 					element: document.querySelectorAll('.ks-row')[0].querySelector('td'),
-					intro: 'Double click here to update the text.',
+					intro: 'Double click here to update the content.',
 				},
 				{
 					element: document.querySelectorAll('.delete-btn')[0],
@@ -75,13 +75,13 @@ $(document).ready(function() {
 
 	// create =======================================================================
 
-	var textInput = createForm.find('.text-input');
+	var contentInput = createForm.find('.content-input');
 	$('#ks-create').on('click', function() {
-		if (!textInput.val())
+		if (!contentInput.val())
 			return;
 
 		addNewTodo(createForm.serialize());
-		textInput.focus();
+		contentInput.focus();
 	});
 
 	function addNewTodo(todoData) {
@@ -97,7 +97,7 @@ $(document).ready(function() {
 				if (data.todo) {
 					rawTodos.unshift(data.todo);
 					refreshTodoList(rawTodos);
-					textInput.val("");
+					contentInput.val("");
 				}
 			},
 			dataType: 'json',
@@ -106,33 +106,33 @@ $(document).ready(function() {
 
 	// update =======================================================================
 
-	var textBeforeEdit = '';
+	var contentBeforeEdit = '';
 	$(ksList).on('dblclick', '.ks-row', function() {
 		// debugPrint('ks-row dblclicked');
 
 		var existingInput = $(ksList).find('.ks-row-input');
 		if (existingInput) {
-			existingInput.parent().text(textBeforeEdit);
+			existingInput.parent().text(contentBeforeEdit);
 			existingInput.remove();
 		}
 
 		var todoId = $(this).attr('id');
-		var textTd = $(this).children('td:first');
-		var todoText = textTd.text();
+		var contentTd = $(this).children('td:first');
+		var todoContent = contentTd.text();
 
-		textBeforeEdit = todoText;
-		textTd.text('');
+		contentBeforeEdit = todoContent;
+		contentTd.text('');
 
-		var updateTextArea = $('<textarea class="col-xs-12 ks-row-input" rows="4">' + htmlEscape(todoText).replace(/\"/g, /*"*/ '&quot;') + '</textarea>');
-		updateTextArea.appendTo(textTd).focus();
+		var updateTextArea = $('<textarea class="col-xs-12 ks-row-input" rows="4">' + htmlEscape(todoContent).replace(/\"/g, /*"*/ '&quot;') + '</textarea>');
+		updateTextArea.appendTo(contentTd).focus();
 	
 		var submitBtn = $('<input type="button" class="update-btn btn btn-primary btn-xs" name="submit-update" value="Submit">').on('click', function() {
 
 			// Update todo
 			var ksRowInput = $(this).siblings('.ks-row-input');
-			var newText = ksRowInput.val();
+			var newContent = ksRowInput.val();
 
-			if (!newText)
+			if (!newContent)
 				return;
 
 			$.ajax({
@@ -140,7 +140,7 @@ $(document).ready(function() {
 				url: '/todos/update',
 				data: {
 					todo_id: todoId,
-					text: newText,
+					content: newContent,
 				},
 				success: function(data) {
 					if (data.error_messages) {
@@ -155,7 +155,7 @@ $(document).ready(function() {
 			});
 			
 			ksRowInput.val('');
-			textInput.focus();
+			contentInput.focus();
 
 			if (intro) {
 				intro.exit();
@@ -227,8 +227,8 @@ $(document).ready(function() {
 		ksList.empty();
 		for (var i = 0; i < todos.length; i++) {
 			var str = '';
-			str += '<tr id="' + todos[i].todo_id + '" class="ks-row">';
-			str += '<td>' + htmlEscape(todos[i].text) + '</td>';
+			str += '<tr id="' + todos[i].id + '" class="ks-row">';
+			str += '<td>' + htmlEscape(todos[i].content) + '</td>';
 			str += '<td><small class="text-muted">' + htmlEscape(todos[i].created_at) + '</small></td>';
 			str += '<td><span class="delete-btn"><i class="icon-remove-sign"></i></span></td></tr>';
 

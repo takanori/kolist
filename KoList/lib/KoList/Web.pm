@@ -76,22 +76,29 @@ get '/todos' => [qw/logged_in_only/] => sub {
 # TODO make CRUD ad logged_in_only
 post '/todos/create' => sub {
 	my ($self, $c) = @_;
-	my $result = $c->req->validator([
-			'text' => {
-				rule => [
-					['NOT_NULL', 'text is null'],
-				],
-			},
-		]);
-	if ($result->has_error) {
-		my $error_messages = [$result->errors->{text}];
-		return $c->render_json({error_messages => $error_messages});
-	}
-	my $todo = $self->create_todo(
-		$result->valid('text'),
-		$result->valid('due'),
-		$result->valid('done'),
-	);
+	# my $result = $c->req->validator([
+			# 'content' => {
+				# rule => [
+					# ['NOT_NULL', 'content is null'],
+				# ],
+			# },
+		# ]);
+	# if ($result->has_error) {
+		# my $error_messages = [$result->errors->{content}];
+		# return $c->render_json({error_messages => $error_messages});
+	# }
+	# TODO
+	# my $todo = $self->create_todo(
+		# $c->req->param('user_id'),
+		# $c->req->param('user_name'),
+		# $c->req->param('content'),
+		# # $c->req->param('due'),
+		# 'dddddddddddddddd',
+		# $c->req->param('done'),
+	# );
+	my $todo = $self->create_todo({
+			content => $c->req->param('content'),
+		});
 
 	$c->render_json({todo => $todo});
 };
@@ -105,21 +112,23 @@ get '/todos/search' => sub {
 router 'PUT' => '/todos/update' => sub {
 	my ($self, $c) = @_;
 	my $result = $c->req->validator([
-			'text' => {
+			'content' => {
 				rule => [
-					['NOT_NULL', 'text is null'],
+					['NOT_NULL', 'content is null'],
 				],
 			},
 		]);
 	if ($result->has_error) {
-		my $error_messages = [$result->errors->{text}];
+		my $error_messages = [$result->errors->{content}];
 		return $c->render_json({ error_messages => $error_messages });
 	}
 
 	# TODO
 	my $todo = $self->update_todo(
+		$result->valid('user_id'),
+		$result->valid('user_name'),
 		$c->req->param('todo_id'), 
-		$result->valid('text'),
+		$result->valid('content'),
 		$c->req->param('due'),
 		$c->req->param('done')
 	);
@@ -225,10 +234,32 @@ sub db {
 # Todos ================================================================== 
 
 sub create_todo {
-	my ($self, $text, $due, $done) = @_;
-	$text = "" if !defined $text;
+	my ($self, $todo) = @_;
+	# $todo->{content} = "" if !defined $todo->{content};
+	# $todo->{content} = 'ooooooooooooo';
+	# $content = "" if !defined $content;
+	# my $row = $self->db->insert('todos', {
+			# user_id => $user_id,
+			# user_name => $username,
+			# content => $content,
+			# due => $self->current_time, # TODO
+			# done => 0, # TODO
+			# created_at => $self->current_time,
+			# updated_at => $self->current_time,
+		# });
+	# my $row = $self->db->insert('todos', {
+			# user_id => 'iHfnCyIp4xGyMYtPU5rQ3g', 
+			# user_name => 'alice',
+			# content => $content,
+			# due => $self->current_time, # TODO
+			# done => 0, # TODO
+			# created_at => $self->current_time,
+			# updated_at => $self->current_time,
+		# });
 	my $row = $self->db->insert('todos', {
-			text => $text,
+			user_id => 'iHfnCyIp4xGyMYtPU5rQ3g', 
+			user_name => 'alice',
+			content => $todo->{content},
 			due => $self->current_time, # TODO
 			done => 0, # TODO
 			created_at => $self->current_time,
@@ -237,6 +268,7 @@ sub create_todo {
 	return \%{$row->get_columns};
 }
 
+# TODO
 sub todo_list {
 	my $self = shift;
 	my $itr = $self->db->search('todos', {}, {
@@ -251,11 +283,13 @@ sub todo_list {
 }
 
 sub update_todo {
-	my ($self, $todo_id, $text, $due, $done) = @_;
-	$text = '' if !defined $text;
+	my ($self, $todo_id, $user_id, $user_name, $content, $due, $done) = @_;
+	$content = '' if !defined $content;
 	my $update_row_count = $self->db->update('todos',
 		{
-			text => $text,
+			user_id => $user_id,
+			user_name => $user_name,
+			content => $content,
 			due => $self->current_time, # TODO
 			done => 0, # TODO
 			updated_at => $self->current_time,
