@@ -104,7 +104,9 @@ post '/todos/create' => sub {
 
 get '/todos/search' => sub {
 	my ($self, $c) = @_;
-	my $todos = $self->todo_list;
+
+	my $session = Plack::Session->new($c->req->env);
+	my $todos = $self->search_todo($session->get('user_id'));
 	$c->render_json({todos => $todos});
 };
 
@@ -249,9 +251,13 @@ sub create_todo {
 }
 
 # TODO
-sub todo_list {
-	my $self = shift;
-	my $itr = $self->db->search('todos', {}, {
+sub search_todo {
+	my ($self, $user_id) = @_;
+	my $itr = $self->db->search('todos', 
+		{
+			user_id => $user_id,
+		}, 
+		{
 			order_by => {'created_at' => 'DESC'},
 		});
 
