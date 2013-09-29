@@ -12,10 +12,10 @@
 				<div class="clearfix">
 					<textarea class="content-input col-xs-12" name="content" rows="3" placeholder="Write your texts here"></textarea><br>
 					<!-- TODO -->
-					<input type="input" name="due" value="sample_due">
-					<input type="input" name="done" value="sample_done">
+					<input type="text" name="due" value="sample_due">
+					<input type="text" name="done" value="sample_done">
 				</div>
-				<div id class="actions">
+				<div class="actions">
 					<input type="button" id="ks-create" class="btn btn-primary" value="Submit">
 					<input type="button" id="ks-help" class="btn btn-default" value="Help" style="display: none;">
 				</div>
@@ -36,7 +36,7 @@
 
 : around jsforeachpage -> {
 
-<script type="text/javascript" src="<: $c.req.uri_for('/js/kossynote.js') :>"></script>
+<script type="text/javascript" src="<: $c.req.uri_for('/js/kolist.js') :>"></script>
 <script type="text/javascript" src="<: $c.req.uri_for('/js/intro.js') :>"></script>
 
 : }

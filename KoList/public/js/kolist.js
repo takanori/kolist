@@ -170,7 +170,7 @@ $(document).ready(function() {
 
 	function updateCache(todo) {
 		for (var i = 0; i < rawTodos.length; i++) {
-			if (rawTodos[i].todo_id == todo.todo_id) {
+			if (rawTodos[i].id == todo.id) {
 				rawTodos[i] = todo;
 				break;
 			}

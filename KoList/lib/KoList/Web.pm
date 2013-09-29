@@ -122,15 +122,16 @@ router 'PUT' => '/todos/update' => sub {
 		return $c->render_json({ error_messages => $error_messages });
 	}
 
+	my $session = Plack::Session->new($c->req->env);
 	# TODO
-	my $todo = $self->update_todo(
-		$result->valid('user_id'),
-		$result->valid('user_name'),
-		$c->req->param('todo_id'), 
-		$result->valid('content'),
-		$c->req->param('due'),
-		$c->req->param('done')
-	);
+	my $todo = $self->update_todo({
+			user_id => $session->get('user_id'),
+			user_name => $session->get('user_name'),
+			todo_id => $c->req->param('todo_id'),
+			content => $c->req->param('content'),
+			due => $c->req->param('due'),
+			done => $c->req->param('done'),
+		});
 	$c->render_json({todo => $todo});
 };
 
@@ -234,18 +235,7 @@ sub db {
 
 sub create_todo {
 	my ($self, $todo) = @_;
-	# $todo->{content} = "" if !defined $todo->{content};
-	# $todo->{content} = 'ooooooooooooo';
-	# $content = "" if !defined $content;
-	# my $row = $self->db->insert('todos', {
-			# user_id => 'iHfnCyIp4xGyMYtPU5rQ3g', 
-			# user_name => 'alice',
-			# content => $content,
-			# due => $self->current_time, # TODO
-			# done => 0, # TODO
-			# created_at => $self->current_time,
-			# updated_at => $self->current_time,
-		# });
+	$todo->{content} //= "";
 	my $row = $self->db->insert('todos', {
 			user_id => $todo->{user_id}, 
 			user_name => $todo->{user_name},,
@@ -262,7 +252,7 @@ sub create_todo {
 sub todo_list {
 	my $self = shift;
 	my $itr = $self->db->search('todos', {}, {
-			order_by => {'id' => 'DESC'},
+			order_by => {'created_at' => 'DESC'},
 		});
 
 	my @rows;
@@ -273,23 +263,23 @@ sub todo_list {
 }
 
 sub update_todo {
-	my ($self, $todo_id, $user_id, $user_name, $content, $due, $done) = @_;
-	$content = '' if !defined $content;
+	my ($self, $todo) = @_;
+	$todo->{content} //= "";
 	my $update_row_count = $self->db->update('todos',
 		{
-			user_id => $user_id,
-			user_name => $user_name,
-			content => $content,
+			user_id => $todo->{user_id},
+			user_name => $todo->{user_name},
+			content => $todo->{content},
 			due => $self->current_time, # TODO
 			done => 0, # TODO
 			updated_at => $self->current_time,
 		},
 		{
-			id => $todo_id,
+			id => $todo->{todo_id},
 		},
 	);
 	my $row = $self->db->single('todos', {
-			id => $todo_id,
+			id => $todo->{todo_id},
 		});
 	return \%{$row->get_columns};
 }
