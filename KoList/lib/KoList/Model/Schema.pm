@@ -6,7 +6,7 @@ use DateTime;
 use DateTime::Format::MySQL;
 
 table {
-	name 'notes';
+	name 'todos';
 	pk 'id';
 	columns qw(
 		id
