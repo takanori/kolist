@@ -1,0 +1,94 @@
+: cascade base
+: around content -> {
+
+<div class="section">
+
+	<div class="container">
+
+		<div id="error-messages"></div>
+
+		<form id="register-form" action="<: $c.req.uri_for('/register/create') :>" method="POST">
+
+			<!-- Heading -->
+			<div>
+				<h1>Register</h1>
+				<p>Description here</p>
+			</div>
+
+			<!-- Text -->
+			<div><label>Username:</label><input type="text" name="username"></div>
+			<div><label>Email:</label><input type="text" name="email" data-ideal="required email"></div>
+			<div><label>Password:</label><input id="password" type="password" name="password" data-ideal="required pass"></div>
+			<div><label>Conform Password:</label><input type="password" name="password2"></div>
+
+			<!-- Separator -->
+			<div><hr/></div>
+
+			<!-- Buttons -->
+			<div>
+				<button type="submit">Submit</button>
+				<button id="reset" type="button">Reset</button>
+			</div>
+
+		</form>
+
+		<hr>
+
+		<!-- <textarea id="debug" class="col-md-12" rows="10"></textarea> -->
+
+	</div><!-- /.container -->
+
+</div><!-- /.section -->
+
+: }
+
+: around jsforeachpage -> {
+
+<script type="text/javascript" src="<: $c.req.uri_for('/js/jquery.idealforms.min.js') :>"></script>
+
+<script type="text/javascript">
+$(function() {
+
+	var options = {
+
+		onSuccess: function(e) {
+		},
+
+		onFail: function() {
+			alert(registerForm.getInvalid().length + ' invalid fields.');
+		},
+
+		inputs: {
+			'username': {
+				filters: 'required username ajax',
+				data: {
+					ajax: {
+						type: 'POST',
+						url: '/register/validate',
+					},
+				},
+				errors: {
+					ajax: {
+						success: 'User not available.',
+						error: 'Sorry!!, there was an error on the server. Try again later.',
+					},
+				},
+			},
+			'password2': {
+				filters: 'required equalto',
+				data: { equalto: '#password' },
+			},
+		}
+	};
+
+	var registerForm = $('#register-form').idealforms(options).data('idealforms');
+
+	$('#reset').bind('click', function() {
+		registerForm.reset();
+	});
+
+});
+</script>
+
+: }
+

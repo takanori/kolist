@@ -1,4 +1,4 @@
-package KossyNote::Model::Schema;
+package KoList::Model::Schema;
 use strict;
 use warnings;
 use Teng::Schema::Declare;

@@ -1,3 +1,3 @@
-package KossyNote::Model;
+package KoList::Model;
 use parent 'Teng';
 1;

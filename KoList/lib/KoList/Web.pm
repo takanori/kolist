@@ -89,6 +89,8 @@ post '/todos/create' => sub {
 	}
 	my $todo = $self->create_todo(
 		$result->valid('text'),
+		$result->valid('due'),
+		$result->valid('done'),
 	);
 
 	$c->render_json({todo => $todo});
@@ -114,7 +116,13 @@ router 'PUT' => '/todos/update' => sub {
 		return $c->render_json({ error_messages => $error_messages });
 	}
 
-	my $todo = $self->update_todo($c->req->param('todo_id'), $result->valid('text'));
+	# TODO
+	my $todo = $self->update_todo(
+		$c->req->param('todo_id'), 
+		$result->valid('text'),
+		$c->req->param('due'),
+		$c->req->param('done')
+	);
 	$c->render_json({todo => $todo});
 };
 
@@ -204,7 +212,7 @@ sub db {
 	if (!defined($self->{_db})) {
 		my $config = new Config::Simple('config.pm');
 		my $cfg = $config->vars();
-		$self->{_db} = KossyAdvance::Model->new(connect_info => [
+		$self->{_db} = KoList::Model->new(connect_info => [
 			$cfg->{'mysql.dsn'},
 			$cfg->{'mysql.user'},
 			$cfg->{'mysql.pass'},
@@ -222,7 +230,7 @@ sub create_todo {
 	my $row = $self->db->insert('todos', {
 			text => $text,
 			due => $self->current_time, # TODO
-			done => 0,
+			done => 0, # TODO
 			created_at => $self->current_time,
 			updated_at => $self->current_time,
 		});
@@ -248,8 +256,8 @@ sub update_todo {
 	my $update_row_count = $self->db->update('todos',
 		{
 			text => $text,
-			due => $due,
-			done => $done,
+			due => $self->current_time, # TODO
+			done => 0, # TODO
 			updated_at => $self->current_time,
 		},
 		{

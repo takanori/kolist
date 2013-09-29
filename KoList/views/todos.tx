@@ -1,0 +1,40 @@
+: cascade base
+: around content -> {
+
+<div class="section">
+
+	<div class="container">
+
+		<div id="error-messages"></div>
+
+		<form id="create-form" method="post" action="#">
+			<fieldset>
+				<div class="clearfix">
+					<textarea class="text-input col-xs-12" name="text" rows="3" placeholder="Write your texts here"></textarea><br>
+				</div>
+				<div id class="actions">
+					<input type="button" id="ks-create" class="btn btn-primary" value="Submit">
+					<input type="button" id="ks-help" class="btn btn-default" value="Help" style="display: none;">
+				</div>
+			</fieldset>
+		</form>
+
+		<hr>
+
+		<div id="ks-todos" class="clearfix"></div>
+
+		<!-- <textarea id="debug" class="span6" rows="10"></textarea> -->
+
+			</div><!-- /.container -->
+
+		</div><!-- /.section -->
+
+: }
+
+: around jsforeachpage -> {
+
+<script type="text/javascript" src="<: $c.req.uri_for('/js/kossynote.js') :>"></script>
+<script type="text/javascript" src="<: $c.req.uri_for('/js/intro.js') :>"></script>
+
+: }
+

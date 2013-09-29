@@ -1,0 +1,79 @@
+: cascade base
+: around content -> {
+
+<div class="section">
+
+	<div class="container">
+
+		<div id="error-messages"></div>
+
+		<form id="login-form" action="#">
+
+			<!-- Heading -->
+			<div>
+				<h1>Login</h1>
+				<p>Login to see todos</p>
+			</div>
+
+			<!-- Text -->
+			<div><label>Username:</label><input type="text" name="username"></div>
+			<div><label>Password:</label><input type="password" name="password"></div>
+
+			<!-- Separator -->
+			<div><hr/></div>
+
+			<!-- Buttons -->
+			<div>
+				<!-- <button type="submit">Submit</button> -->
+				<button id="submit-button" type="button">Submit</button>
+				<button id="reset" type="button">Reset</button>
+			</div>
+
+		</form>
+
+		<hr>
+
+		<!-- <textarea id="debug" class="col-md-12" rows="10"></textarea> -->
+
+	</div><!-- /.container -->
+
+</div><!-- /.section -->
+
+: }
+
+: around jsforeachpage -> {
+
+<script type="text/javascript" src="<: $c.req.uri_for('/js/jquery.idealforms.min.js') :>"></script>
+
+<script type="text/javascript">
+$(function() {
+	var options = {};
+	var loginForm = $('#login-form').idealforms(options).data('idealforms');
+
+	$('#submit-button').bind('click', function() {
+		$.ajax({
+			type: 'POST',
+			url: '/login/validate',
+			data: $('#login-form').serialize(),
+			success: function(res) {
+				if (res) {
+					location.href = "<: $c.req.uri_for('/todos') :>";
+				} else {
+					loginForm.resetFields(['password']);
+					alert('Wrong username or password');
+				}
+			},
+			error: function() {
+				alert('login error');
+			},
+		});
+	});
+
+	$('#reset').bind('click', function() {
+		loginForm.reset();
+	});
+});
+</script>
+
+: }
+

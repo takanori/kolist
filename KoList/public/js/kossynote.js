@@ -1,27 +1,27 @@
 $(document).ready(function() {
 
-	var ksNotes = $('#ks-notes');
+	var ksTodos = $('#ks-todos');
 
-	ksNotes.addClass('ks-notes');
-	ksNotes.append(
+	ksTodos.addClass('ks-todos');
+	ksTodos.append(
 		'<table class="table table-striped">' +
 		'<thead><tr><th class="col-md-9">text</th><th class="col-md-2">created_at</th><th class="col-md-1"></th></tr></thead>' +
 		'<tbody class="ks-list"></tbody></table>'
 	);
 
-	var ksList = ksNotes.find('.ks-list');
-	var rawNotes = [];
+	var ksList = ksTodos.find('.ks-list');
+	var rawTodos = [];
 	var createForm = $('#create-form');
 
 	$.ajax({
 		type: 'GET',
-		url: '/notes/search',
+		url: '/todos/search',
 		success: function(data) {
-			if (data.notes) {
-				rawNotes = data.notes;
-				refreshNoteList(rawNotes);
+			if (data.todos) {
+				rawTodos = data.todos;
+				refreshTodoList(rawTodos);
 			} else {
-				// debugPrint('Error searching notes.');
+				// debugPrint('Error searching todos.');
 			}
 		}
 	});
@@ -80,23 +80,23 @@ $(document).ready(function() {
 		if (!textInput.val())
 			return;
 
-		addNewNote(createForm.serialize());
+		addNewTodo(createForm.serialize());
 		textInput.focus();
 	});
 
-	function addNewNote(noteData) {
+	function addNewTodo(todoData) {
 		$.ajax({
 			type: 'POST',
-			url: '/notes/create',
-			data: noteData,
+			url: '/todos/create',
+			data: todoData,
 			success: function(data) {
 				if (data.error_messages) {
 					refreshErrorMessages(data.error_messages);
 					return;
 				}
-				if (data.note) {
-					rawNotes.unshift(data.note);
-					refreshNoteList(rawNotes);
+				if (data.todo) {
+					rawTodos.unshift(data.todo);
+					refreshTodoList(rawTodos);
 					textInput.val("");
 				}
 			},
@@ -116,19 +116,19 @@ $(document).ready(function() {
 			existingInput.remove();
 		}
 
-		var noteId = $(this).attr('id');
+		var todoId = $(this).attr('id');
 		var textTd = $(this).children('td:first');
-		var noteText = textTd.text();
+		var todoText = textTd.text();
 
-		textBeforeEdit = noteText;
+		textBeforeEdit = todoText;
 		textTd.text('');
 
-		var updateTextArea = $('<textarea class="col-xs-12 ks-row-input" rows="4">' + htmlEscape(noteText).replace(/\"/g, /*"*/ '&quot;') + '</textarea>');
+		var updateTextArea = $('<textarea class="col-xs-12 ks-row-input" rows="4">' + htmlEscape(todoText).replace(/\"/g, /*"*/ '&quot;') + '</textarea>');
 		updateTextArea.appendTo(textTd).focus();
 	
 		var submitBtn = $('<input type="button" class="update-btn btn btn-primary btn-xs" name="submit-update" value="Submit">').on('click', function() {
 
-			// Update note
+			// Update todo
 			var ksRowInput = $(this).siblings('.ks-row-input');
 			var newText = ksRowInput.val();
 
@@ -137,9 +137,9 @@ $(document).ready(function() {
 
 			$.ajax({
 				type: 'PUT',
-				url: '/notes/update',
+				url: '/todos/update',
 				data: {
-					note_id: noteId,
+					todo_id: todoId,
 					text: newText,
 				},
 				success: function(data) {
@@ -147,9 +147,9 @@ $(document).ready(function() {
 						refreshErrorMessages(data.error_messages);
 						return;
 					}
-					if (data.note) {
-						updateCache(data.note);
-						refreshNoteList(rawNotes);
+					if (data.todo) {
+						updateCache(data.todo);
+						refreshTodoList(rawTodos);
 					}
 				},
 			});
@@ -168,10 +168,10 @@ $(document).ready(function() {
 		}
 	});
 
-	function updateCache(note) {
-		for (var i = 0; i < rawNotes.length; i++) {
-			if (rawNotes[i].note_id == note.note_id) {
-				rawNotes[i] = note;
+	function updateCache(todo) {
+		for (var i = 0; i < rawTodos.length; i++) {
+			if (rawTodos[i].todo_id == todo.todo_id) {
+				rawTodos[i] = todo;
 				break;
 			}
 		}
@@ -181,39 +181,39 @@ $(document).ready(function() {
 
 	$(ksList).on('click', '.delete-btn', function() {
 		// debugPrint('delete-btn clicked');
-		var noteId = $(this).parent().parent().attr('id');
-		deleteNote(noteId);
+		var todoId = $(this).parent().parent().attr('id');
+		deleteTodo(todoId);
 
 		if (intro) {
 			intro.exit();
 		}
 	});
 
-	function deleteNote(noteId) {
-		if (!noteId)
+	function deleteTodo(todoId) {
+		if (!todoId)
 			return;
 		$.ajax({
 			type: 'DELETE',
-			url: '/notes/delete',
+			url: '/todos/delete',
 			data: {
-				note_id : noteId,
+				todo_id : todoId,
 			}, 
 			success: function(data) {
 				if (data.error_messages) {
 					refreshErrorMessages(data.error_messages);
 					return;
 				}
-				// debugPrint("success in delete: " + data.note_id);
-				deleteCache(data.note_id);
-				refreshNoteList(rawNotes);
+				// debugPrint("success in delete: " + data.todo_id);
+				deleteCache(data.todo_id);
+				refreshTodoList(rawTodos);
 			},
 		});
 	}
 
-	function deleteCache(noteId) {
-		for (var i = 0; i < rawNotes.length; i++) {
-			if (rawNotes[i].note_id == noteId) {
-				rawNotes.splice(i, 1);
+	function deleteCache(todoId) {
+		for (var i = 0; i < rawTodos.length; i++) {
+			if (rawTodos[i].todo_id == todoId) {
+				rawTodos.splice(i, 1);
 				break;
 			}
 		}
@@ -221,21 +221,21 @@ $(document).ready(function() {
 
 	// helper ========================================================================
 
-	function refreshNoteList(notes) {
-		// debugPrint('refreshNoteList notes.length: ' + notes.length);
+	function refreshTodoList(todos) {
+		// debugPrint('refreshTodoList todos.length: ' + todos.length);
 		
 		ksList.empty();
-		for (var i = 0; i < notes.length; i++) {
+		for (var i = 0; i < todos.length; i++) {
 			var str = '';
-			str += '<tr id="' + notes[i].note_id + '" class="ks-row">';
-			str += '<td>' + htmlEscape(notes[i].text) + '</td>';
-			str += '<td><small class="text-muted">' + htmlEscape(notes[i].created_at) + '</small></td>';
+			str += '<tr id="' + todos[i].todo_id + '" class="ks-row">';
+			str += '<td>' + htmlEscape(todos[i].text) + '</td>';
+			str += '<td><small class="text-muted">' + htmlEscape(todos[i].created_at) + '</small></td>';
 			str += '<td><span class="delete-btn"><i class="icon-remove-sign"></i></span></td></tr>';
 
 			ksList.append(str);
 		}
 
-		if (notes.length === 0) {
+		if (todos.length === 0) {
 			ksHelp.hide();
 		} else if (ksHelp.is(':hidden')) {
 			ksHelp.show();
