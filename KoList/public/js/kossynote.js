@@ -212,7 +212,7 @@ $(document).ready(function() {
 
 	function deleteCache(todoId) {
 		for (var i = 0; i < rawTodos.length; i++) {
-			if (rawTodos[i].todo_id == todoId) {
+			if (rawTodos[i].id == todoId) {
 				rawTodos.splice(i, 1);
 				break;
 			}

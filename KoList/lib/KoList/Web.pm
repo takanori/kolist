@@ -75,7 +75,6 @@ get '/todos' => [qw/logged_in_only/] => sub {
 	$c->render('todos.tx', {});
 };
 
-# TODO make CRUD ad logged_in_only
 post '/todos/create' => sub {
 	my ($self, $c) = @_;
 	# my $result = $c->req->validator([
