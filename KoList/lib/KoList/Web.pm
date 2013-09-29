@@ -37,6 +37,7 @@ filter 'stash_login_condition' => sub {
 
 		if ($session->get('user_id')) {
 			$c->stash->{logged_in} = 1;
+			$c->stash->{user_name} = $session->get('user_name');
 		}
 		$c->stash->{loggedIn} = 1;
 		$app->($self,$c);
@@ -54,6 +55,7 @@ filter 'logged_in_only' => sub {
 			# return $c->redirect('/login'); 
 		}
 		$c->stash->{logged_in} = 1;
+		$c->stash->{user_name} = $session->get('user_name');
 		return $app->($self, $c);
 	}
 };
@@ -88,16 +90,12 @@ post '/todos/create' => sub {
 		# return $c->render_json({error_messages => $error_messages});
 	# }
 	# TODO
-	# my $todo = $self->create_todo(
-		# $c->req->param('user_id'),
-		# $c->req->param('user_name'),
-		# $c->req->param('content'),
-		# # $c->req->param('due'),
-		# 'dddddddddddddddd',
-		# $c->req->param('done'),
-	# );
 	my $todo = $self->create_todo({
+			user_id => $c->req->param('user_id'),
+			user_name => $c->req->param('user_name'),
 			content => $c->req->param('content'),
+			due => $c->req->param('due'),
+			done => $c->req->param('done'),
 		});
 
 	$c->render_json({todo => $todo});
@@ -156,23 +154,23 @@ get '/register' => sub {
 
 post '/register/create' => sub {
 	my ($self, $c) = @_;
-	my $username = $c->req->param('username');
+	my $user_name = $c->req->param('user_name');
 	my $email = $c->req->param('email');
 	my $password = $c->req->param('password');
 
-	my $user_id = $self->create_user($username, $email, $password);
+	my $user_id = $self->create_user($user_name, $email, $password);
 
 	my $session = Plack::Session->new($c->req->env);
 	$session->set('user_id', $user_id);
-	$session->set('username', $username);
+	$session->set('user_name', $user_name);
 	$c->redirect('/todos'); 
 };
 
 post '/register/validate' => sub {
 	my ($self, $c) = @_;
-	my $username = $c->req->param('username');
+	my $user_name = $c->req->param('user_name');
 
-	if ($self->username_exists($username)) {
+	if ($self->user_name_exists($user_name)) {
 		$c->render_json(JSON::false);
 	} else {
 		$c->render_json(JSON::true);
@@ -188,17 +186,17 @@ get '/login' => sub {
 
 post '/login/validate' => sub {
 	my ($self, $c) = @_;
-	my $username = $c->req->param('username');
+	my $user_name = $c->req->param('user_name');
 	my $password = $c->req->param('password');
 
-	my $user_id = $self->check_username_and_password($username, $password);
+	my $user_id = $self->check_user_name_and_password($user_name, $password);
 	if (!$user_id) {
 		return $c->render_json(JSON::false);
 	}
 
 	my $session = Plack::Session->new($c->req->env);
 	$session->set('user_id', $user_id);
-	$session->set('username', $username);
+	$session->set('user_name', $user_name);
 
 	return $c->render_json(JSON::true);
 };
@@ -239,15 +237,6 @@ sub create_todo {
 	# $todo->{content} = 'ooooooooooooo';
 	# $content = "" if !defined $content;
 	# my $row = $self->db->insert('todos', {
-			# user_id => $user_id,
-			# user_name => $username,
-			# content => $content,
-			# due => $self->current_time, # TODO
-			# done => 0, # TODO
-			# created_at => $self->current_time,
-			# updated_at => $self->current_time,
-		# });
-	# my $row = $self->db->insert('todos', {
 			# user_id => 'iHfnCyIp4xGyMYtPU5rQ3g', 
 			# user_name => 'alice',
 			# content => $content,
@@ -257,8 +246,8 @@ sub create_todo {
 			# updated_at => $self->current_time,
 		# });
 	my $row = $self->db->insert('todos', {
-			user_id => 'iHfnCyIp4xGyMYtPU5rQ3g', 
-			user_name => 'alice',
+			user_id => $todo->{user_id}, 
+			user_name => ,
 			content => $todo->{content},
 			due => $self->current_time, # TODO
 			done => 0, # TODO
@@ -317,34 +306,34 @@ sub delete_todo {
 
 # Users ================================================================== 
 
-sub username_exists {
-	my ($self, $username) = @_;
+sub user_name_exists {
+	my ($self, $user_name) = @_;
 
 	my $row = $self->db->single('users', {
-			name => $username,
+			name => $user_name,
 		});
 	return $row ? 1 : 0;
 }
 
-sub check_username_and_password {
-	my ($self, $username, $password) = @_;
+sub check_user_name_and_password {
+	my ($self, $user_name, $password) = @_;
 
 	my $row = $self->db->single('users', {
-			name => $username,
-			password => Digest::SHA::sha1_hex($username . $password),
+			name => $user_name,
+			password => Digest::SHA::sha1_hex($user_name . $password),
 		});
 
 	return $row ? $row->get_column('id') : 0;
 }
 
 sub create_user {
-	my ($self, $username, $email, $password) = @_;
+	my ($self, $user_name, $email, $password) = @_;
 
 	my $row = $self->db->insert('users', {
 			id => Data::GUID->new->as_base64_urlsafe,
-			name => $username,
+			name => $user_name,
 			email => $email,
-			password => Digest::SHA::sha1_hex($username . $password),
+			password => Digest::SHA::sha1_hex($user_name . $password),
 			created_at => $self->current_time,
 		});
 

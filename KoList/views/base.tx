@@ -1,4 +1,4 @@
-<!-- : my $logged_in = $c.stash.logged_in; -->
+: my $logged_in = $c.stash.logged_in;
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -40,20 +40,20 @@
 				<span class="icon-bar"></span>
 			</button>
 			<!-- You'll want to use a responsive image option so this logo looks good on devices - I recommend using something like retina.js (do a quick Google search for it and you'll find it) -->
-			<a class="navbar-brand" href="<: $c.req.uri_for('/') :>">KossySampleProject</a>
+			<a class="navbar-brand" href="<: $c.req.uri_for('/') :>">KoList <: $c.stash.user_name :></a>
 		</div>
 
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 			<ul class="nav navbar-nav navbar-right">
-<!-- : if ($logged_in) { -->
-				<!-- <li><a href="<: $c.req.uri_for('/todos') :>">Todo</a></li> -->
-				<!-- <li><a href="<: $c.req.uri_for('/logout') :>">Logout</a></li> -->
-<!-- : }  -->
-<!-- : else { -->
+: if ($logged_in) {
+				<li><a href="<: $c.req.uri_for('/todos') :>">Todo</a></li>
+				<li><a href="<: $c.req.uri_for('/logout') :>">Logout</a></li>
+: } 
+: else {
 				<li><a href="<: $c.req.uri_for('/register') :>">Register</a></li>
 				<li><a href="<: $c.req.uri_for('/login') :>">Login</a></li>
-<!-- : } -->
+: }
 			</ul>
 		</div><!-- /.navbar-collapse -->
 	</div><!-- /.container -->

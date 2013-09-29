@@ -12,10 +12,10 @@
 				<div class="clearfix">
 					<textarea class="content-input col-xs-12" name="content" rows="3" placeholder="Write your texts here"></textarea><br>
 					<!-- TODO -->
-					<input type="hidden" name="user_id" value="qIjKMxMp4xGVIVlGU5rQ3g">
-					<input type="hidden" name="username" value="alice">
-					<input type="hidden" name="due" value="sample_due">
-					<input type="hidden" name="done" value="sample_done">
+					<input type="input" name="user_id" value="iHfnCyIp4xGyMYtPU5rQ3g">
+					<input type="input" name="user_name" value="alice">
+					<input type="input" name="due" value="sample_due">
+					<input type="input" name="done" value="sample_done">
 				</div>
 				<div id class="actions">
 					<input type="button" id="ks-create" class="btn btn-primary" value="Submit">
