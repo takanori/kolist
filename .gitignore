@@ -12,6 +12,7 @@ MANIFEST.bak
 
 # Carton
 local/
+cpanfile.snapshot
 
 # Vim
 *.sw[po]
