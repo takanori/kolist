@@ -12,7 +12,6 @@ MANIFEST.bak
 
 # Carton
 local/
-cpanfile.snapshot
 
 # Vim
 *.sw[po]
@@ -25,3 +24,6 @@ MYMETA.*
 
 # Session
 KoList/sessions/
+
+# Config
+KoList/config.pm

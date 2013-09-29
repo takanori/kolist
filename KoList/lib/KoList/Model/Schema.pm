@@ -24,4 +24,23 @@ table {
 	};
 };
 
+table {
+	name 'users';
+	pk 'id';
+	columns qw(
+		id
+		name
+		email
+		password
+		created_at
+	);
+	inflate '^.+_at$' => sub {
+		DateTime::Format::MySQL->parse_datetime(shift);
+	};
+	deflate '^.+_at$' => sub {
+		DateTime::Format::MySQL->format_datetime(shift);
+	};
+
+};
+
 1;
