@@ -5,7 +5,7 @@ $(document).ready(function() {
 	ksTodos.addClass('ks-todos');
 	ksTodos.append(
 		'<table class="table well">' +
-		'<thead><tr><th class="col-md-1">c</th><th class="col-md-9">content</th><th class="col-md-2">created_at</th><th class="col-md-1"></th></tr></thead>' +
+		'<thead><tr><th class="col-md-1"></th><th class="col-md-9">content</th><th class="col-md-2">created_at</th><th class="col-md-1"></th></tr></thead>' +
 		'<tbody class="ks-list"></tbody></table>'
 	);
 
