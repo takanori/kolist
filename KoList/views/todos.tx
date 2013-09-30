@@ -8,18 +8,16 @@
 		<div id="error-messages"></div>
 
 		<form id="create-form" method="post" action="#">
-			<fieldset>
-				<div class="clearfix">
-					<textarea class="content-input col-xs-12" name="content" rows="3" placeholder="Write your texts here"></textarea><br>
-					<!-- TODO -->
-					<input type="text" name="due" value="sample_due">
-					<input type="text" name="done" value="sample_done">
-				</div>
-				<div class="actions">
-					<input type="button" id="ks-create" class="btn btn-primary" value="Submit">
-					<input type="button" id="ks-help" class="btn btn-default" value="Help" style="display: none;">
-				</div>
-			</fieldset>
+			<div class="clearfix">
+				<textarea class="content-input form-control col-xs-12" name="content" rows="3" placeholder="Write your texts here"></textarea><br>
+				<!-- TODO -->
+				<input type="hidden" name="due" value="sample_due">
+				<input type="hidden" name="done" value="sample_done">
+			</div>
+			<div class="actions ">
+				<input type="button" id="ks-create" class="btn btn-primary" value="Submit">
+				<input type="button" id="ks-help" class="btn btn-default" value="Help" style="display: none;">
+			</div>
 		</form>
 
 		<hr>

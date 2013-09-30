@@ -4,7 +4,7 @@ $(document).ready(function() {
 
 	ksTodos.addClass('ks-todos');
 	ksTodos.append(
-		'<table class="table table-striped">' +
+		'<table class="table well">' +
 		'<thead><tr><th class="col-md-1">c</th><th class="col-md-9">content</th><th class="col-md-2">created_at</th><th class="col-md-1"></th></tr></thead>' +
 		'<tbody class="ks-list"></tbody></table>'
 	);
@@ -265,7 +265,11 @@ $(document).ready(function() {
 				str += 'checked="true"';
 			}
 			str += '></td>';
-			str += '<td class="todo-content">' + htmlEscape(todos[i].content) + '</td>';
+			str += '<td class="todo-content';
+			if (todos[i].done !== '0') {
+				str += ' text-muted';
+			}
+			str += '">' + htmlEscape(todos[i].content) + '</td>';
 			str += '<td><small class="text-muted">' + htmlEscape(todos[i].created_at) + '</small></td>';
 			str += '<td><span class="delete-btn"><i class="icon-remove-sign"></i></span></td></tr>';
 
