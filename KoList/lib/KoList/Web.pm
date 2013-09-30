@@ -112,29 +112,33 @@ get '/todos/search' => sub {
 
 router 'PUT' => '/todos/update' => sub {
 	my ($self, $c) = @_;
-	my $result = $c->req->validator([
-			'content' => {
-				rule => [
-					['NOT_NULL', 'content is null'],
-				],
-			},
-		]);
-	if ($result->has_error) {
-		my $error_messages = [$result->errors->{content}];
-		return $c->render_json({ error_messages => $error_messages });
-	}
 
 	my $session = Plack::Session->new($c->req->env);
+
 	# TODO
 	my $todo = $self->update_todo({
 			user_id => $session->get('user_id'),
 			user_name => $session->get('user_name'),
 			todo_id => $c->req->param('todo_id'),
 			content => $c->req->param('content'),
-			due => $c->req->param('due'),
+			# due => $c->req->param('due'),
 			done => $c->req->param('done'),
 		});
 	$c->render_json({todo => $todo});
+};
+
+router 'PUT' => '/todos/update-done-only' => sub {
+	my ($self, $c) = @_;
+
+	my $session = Plack::Session->new($c->req->env);
+
+	my $todo = $self->update_done_only({
+			user_id => $session->get('user_id'),
+			user_name => $session->get('user_name'),
+			todo_id => $c->req->param('todo_id'),
+			done => $c->req->param('done'),
+		});
+	return $c->render_json({todo => $todo});
 };
 
 router 'DELETE' => '/todos/delete' => sub {
@@ -276,9 +280,27 @@ sub update_todo {
 			user_id => $todo->{user_id},
 			user_name => $todo->{user_name},
 			content => $todo->{content},
-			due => $self->current_time, # TODO
-			done => 0, # TODO
+			due => $self->current_time,
+			done => $todo->{done} + 0,
 			updated_at => $self->current_time,
+		},
+		{
+			id => $todo->{todo_id},
+		},
+	);
+	my $row = $self->db->single('todos', {
+			id => $todo->{todo_id},
+		});
+	return \%{$row->get_columns};
+}
+
+sub update_done_only {
+	my ($self, $todo) = @_;
+	my $updated_row_count = $self->db->update('todos',
+		{
+			user_id => $todo->{user_id},
+			user_name => $todo->{user_name},
+			done => $todo->{done} + 0,
 		},
 		{
 			id => $todo->{todo_id},

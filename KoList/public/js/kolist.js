@@ -131,6 +131,7 @@ $(document).ready(function() {
 			// Update todo
 			var ksRowInput = $(this).siblings('.ks-row-input');
 			var newContent = ksRowInput.val();
+			var newDone = $(this).parent().siblings('td:first').children().prop('checked') ? 1 : 0;
 
 			if (!newContent)
 				return;
@@ -141,6 +142,7 @@ $(document).ready(function() {
 				data: {
 					todo_id: todoId,
 					content: newContent,
+					done: newDone,
 				},
 				success: function(data) {
 					if (data.error_messages) {
@@ -177,6 +179,35 @@ $(document).ready(function() {
 		}
 	}
 
+	// update done only =======================================================================
+
+	$(ksList).on('click', '.done-check', function() {
+
+		var todoId = $(this).parent().parent().attr('id');
+		var newDone = $(this).prop('checked') ? 1 : 0;
+
+		$.ajax({
+			type: 'PUT',
+			url: '/todos/update-done-only',
+			data: {
+				todo_id: todoId,
+				done: newDone,
+			},
+			success: function(data) {
+				if (data.error_messages) {
+					refreshErrorMessages(data.error_messages);
+					return;
+				}
+				if (data.todo) {
+					updateCache(data.todo);
+					refreshTodoList(rawTodos);
+				}
+			},
+		});
+
+	});
+
+	
 	// delete =======================================================================
 
 	$(ksList).on('click', '.delete-btn', function() {
@@ -228,7 +259,12 @@ $(document).ready(function() {
 		for (var i = 0; i < todos.length; i++) {
 			var str = '';
 			str += '<tr id="' + todos[i].id + '" class="ks-row">';
-			str += '<td><input type="checkbox" name="done" value="1"></td>';
+			// str += '<td><input type="checkbox" name="done" checked="' + 'false' + '"></td>';
+			str += '<td><input class="done-check" type="checkbox" name="done" ';
+			if (todos[i].done !== '0') {
+				str += 'checked="true"';
+			}
+			str += '></td>';
 			str += '<td class="todo-content">' + htmlEscape(todos[i].content) + '</td>';
 			str += '<td><small class="text-muted">' + htmlEscape(todos[i].created_at) + '</small></td>';
 			str += '<td><span class="delete-btn"><i class="icon-remove-sign"></i></span></td></tr>';
