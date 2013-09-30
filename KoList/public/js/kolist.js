@@ -5,7 +5,7 @@ $(document).ready(function() {
 	ksTodos.addClass('ks-todos');
 	ksTodos.append(
 		'<table class="table table-striped">' +
-		'<thead><tr><th class="col-md-9">content</th><th class="col-md-2">created_at</th><th class="col-md-1"></th></tr></thead>' +
+		'<thead><tr><th class="col-md-1">c</th><th class="col-md-9">content</th><th class="col-md-2">created_at</th><th class="col-md-1"></th></tr></thead>' +
 		'<tbody class="ks-list"></tbody></table>'
 	);
 
@@ -40,7 +40,7 @@ $(document).ready(function() {
 		intro.setOptions({
 			steps: [
 				{
-					element: document.querySelectorAll('.ks-row')[0].querySelector('td'),
+					element: document.querySelectorAll('.ks-row')[0].querySelector('*[name="content"]'),
 					intro: 'Double click here to update the content.',
 				},
 				{
@@ -117,7 +117,7 @@ $(document).ready(function() {
 		}
 
 		var todoId = $(this).attr('id');
-		var contentTd = $(this).children('td:first');
+		var contentTd = $(this).children('*[name=content]');
 		var todoContent = contentTd.text();
 
 		contentBeforeEdit = todoContent;
@@ -228,7 +228,8 @@ $(document).ready(function() {
 		for (var i = 0; i < todos.length; i++) {
 			var str = '';
 			str += '<tr id="' + todos[i].id + '" class="ks-row">';
-			str += '<td>' + htmlEscape(todos[i].content) + '</td>';
+			str += '<td><input type="checkbox" name="done" value="1"></td>';
+			str += '<td name="content">' + htmlEscape(todos[i].content) + '</td>';
 			str += '<td><small class="text-muted">' + htmlEscape(todos[i].created_at) + '</small></td>';
 			str += '<td><span class="delete-btn"><i class="icon-remove-sign"></i></span></td></tr>';
 
