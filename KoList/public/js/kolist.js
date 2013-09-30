@@ -40,7 +40,7 @@ $(document).ready(function() {
 		intro.setOptions({
 			steps: [
 				{
-					element: document.querySelectorAll('.ks-row')[0].querySelector('*[name="content"]'),
+					element: document.querySelectorAll('.ks-row')[0].querySelector('.todo-content'),
 					intro: 'Double click here to update the content.',
 				},
 				{
@@ -107,7 +107,7 @@ $(document).ready(function() {
 	// update =======================================================================
 
 	var contentBeforeEdit = '';
-	$(ksList).on('dblclick', '.ks-row', function() {
+	$(ksList).on('dblclick', '.todo-content', function() {
 		// debugPrint('ks-row dblclicked');
 
 		var existingInput = $(ksList).find('.ks-row-input');
@@ -116,8 +116,8 @@ $(document).ready(function() {
 			existingInput.remove();
 		}
 
-		var todoId = $(this).attr('id');
-		var contentTd = $(this).children('*[name=content]');
+		var todoId = $(this).parent().attr('id');
+		var contentTd = $(this);
 		var todoContent = contentTd.text();
 
 		contentBeforeEdit = todoContent;
@@ -229,7 +229,7 @@ $(document).ready(function() {
 			var str = '';
 			str += '<tr id="' + todos[i].id + '" class="ks-row">';
 			str += '<td><input type="checkbox" name="done" value="1"></td>';
-			str += '<td name="content">' + htmlEscape(todos[i].content) + '</td>';
+			str += '<td class="todo-content">' + htmlEscape(todos[i].content) + '</td>';
 			str += '<td><small class="text-muted">' + htmlEscape(todos[i].created_at) + '</small></td>';
 			str += '<td><span class="delete-btn"><i class="icon-remove-sign"></i></span></td></tr>';
 
