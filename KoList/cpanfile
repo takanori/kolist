@@ -6,3 +6,12 @@ requires 'FindBin', '1.51';
 requires 'Teng', '0.20';
 requires 'DateTime::Format::MySQL', '0.04';
 requires 'Task::Plack', '0.28';
+requires 'Data::GUID::URLSafe', '0.005';
+requires 'Digest::SHA', '5.84_01';
+requires 'Config::Simple', '4.58';
+
+
+
+
+
+
