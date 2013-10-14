@@ -62,11 +62,11 @@
 
 		<div class="row well">
 			<div class="col-lg-8 col-md-8">
-				<h4>KoListであなたのタスクをクラウド管理</h4>
+				<h4>KoListであなたのタスクをクラウド管理しましょう．</h4>
 				<ul>
 					<li>Plack::Sessionでログイン管理</li>
 					<li>削除・更新のヘルプ機能</li>
-					<li>チェックボックスでタスクの状態管理</li>
+					<li>チェックボックスで状態管理</li>
 				</ul>
 			</div>
 			<div class="col-lg-4 col-md-4 pull-right">
